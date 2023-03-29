@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Generate RSA key pair with 4096 bits
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/school -N betty
+
+echo "RSA key pair created successfully!"
+
