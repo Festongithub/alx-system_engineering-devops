@@ -1,7 +1,7 @@
 # ~/.ssh/config
 
 Host your-server
-    Hostname your-server-ip-address
+    Hostname 3.84.255.109
     User ubuntu
     IdentityFile ~/.ssh/school
     PasswordAuthentication no
