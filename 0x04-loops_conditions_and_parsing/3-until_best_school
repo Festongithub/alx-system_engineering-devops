@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+count=10
+
+until [ $count -eq 0 ]
+do
+    echo "Best School"
+    count=$((count-1))
+done
+
