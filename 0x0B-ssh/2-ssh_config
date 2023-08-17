@@ -1,8 +1,10 @@
-# ~/.ssh/config
-
-Host your-server
-    Hostname 3.84.255.109
+#!/usr/bin/env bash
+#ssh configuration
+Host *
+    Hostname 52.87.153.247
     User ubuntu
+    GSSAPIAuthentication yes
+    GSSAPIDelegateCredentials no
     IdentityFile ~/.ssh/school
     PasswordAuthentication no
 
