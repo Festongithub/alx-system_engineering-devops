@@ -1,3 +1,2 @@
 #!/bin/bash
-uid=root
-echo "hello  ${uid}"
+echo "hello $(whoami)"
