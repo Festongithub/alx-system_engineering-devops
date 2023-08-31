@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# listens to loaclhost 98
+
+nc -lk localhost 98
