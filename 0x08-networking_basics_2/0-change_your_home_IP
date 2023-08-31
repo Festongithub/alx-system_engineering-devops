@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-
-# Add 127.0.0.2 to the list of IP addresses for localhost in /etc/hosts
-echo "127.0.0.2 localhost" | sudo tee -a /etc/hosts > /dev/null
-
-# Add 8.8.8.8 to the list of IP addresses for facebook.com in /etc/hosts
-echo "8.8.8.8 facebook.com" | sudo tee -a /etc/hosts > /dev/null
-
+# Change your home IP
+cp /etc/hosts ~/hosts.new
+sed -i 's/^127.0.0.1.*/127.0.0.2 localhost/g' ~/hosts.new
+echo "8.8.8.8 facebook.com" >> ~/hosts.new
+cp -f ~/hosts.new /etc/hosts
