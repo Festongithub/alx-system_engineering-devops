@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+# SSH configuration 
+Hosts * 
+      PasswordAuthentication no
+      IdentityFile ~/.ssh/school
+      SendEnv LANG Lc _*
+      HashKnownHosts yes
+      GSSAPIAuthentication yes
+      GSSAPIDelegateCredentials no
