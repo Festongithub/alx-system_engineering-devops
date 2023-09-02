@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-
 # script that prints best school using while
+
 var1=0
 while [ $var1 -le 10 ]
 do 
