@@ -5,7 +5,15 @@
 #sudo sed -i 's/server_name _;.*/server_name _;\n\tadd_header X-Served-By \$hostname;/' /etc/nginx/sites-enabled/default 
 sudo apt-get -y update
 sudo apt-get -y install nginx
-sudo ufw allow 'Nginx HTTP'
+echo "Hello world!" | sudo tee /var/www/html/index.html
+
+# create a redirection
+new_strings="server_name _;\n\trwite\ ^\redirect_me\https:\/\/github.com\/Festongithub permanent";
+sudo sed -i "new_strings s/server _name _;/$new_string/" /etc/nginx/sites-enabled-enabled/default;
+# create custom error page
+echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html
+# custom nginx
+
 sudo sed -i "/server _name _/a add_header X-served-By $HOSTNAME;" /etc/nginx/sites-enabled/default
 # check syntax errors
 sudo nginx -t
