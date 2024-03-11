@@ -4,7 +4,7 @@
 # displays good luck for the 8th loop iteration
 # displays Best School for the other iteration
 
-counter=0
+counter=1
 
 while [ $counter -le 10 ]
 do 
@@ -17,5 +17,5 @@ do
 	else
 		echo "Best School"
 	fi
-	counter=$((counter + 1))
+	(( counter++))
 done
