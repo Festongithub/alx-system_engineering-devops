@@ -3,16 +3,16 @@
 
 for i in {1..100}
 do 
-	if (( i % 15 == 0 ))
+	if [ $(( i % 15 )) -eq 0 ]
 	then
 		echo "FizzBuzz"
-	elif (( i  % 3 == 0))
+	elif [ $(( i % 3 )) -eq 0 ]
 	then
 		echo "Buzz"
-	elif (( i % 5 == 0 ))
+	elif [ $(( i % 5 )) -eq 0 ]
 	then
 		echo "Fizz"
 	else
-		echo $i
+		echo "$i"
 	fi
 done
