@@ -2,12 +2,14 @@
 # displays Best School 10 times, but for the 9th iteration,
 # displays Best School and then Hi on a new line.
 
-i="0"
+i=0
 while [ $i -lt 10 ]
 do
-echo "Best school"
-if [ $i -eq 8 ]
-then echo "Hi"
-fi
-i=$((i+1))
+	if [ $i -eq 8 ]
+	then
+		echo "Hi"
+	else
+		echo "Best School"
+	fi
+	(( i++ ))
 done
