@@ -3,7 +3,7 @@
 
 var1=0
 
-while [ $var1 -le 10 ]
+while [ $var1 -lt 10 ]
 do 
   echo "Best School"
   (( var1++ ))
