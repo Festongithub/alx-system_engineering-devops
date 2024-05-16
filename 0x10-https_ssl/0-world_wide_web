@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Script that checks on the domain
 
 print_my_domain () {
