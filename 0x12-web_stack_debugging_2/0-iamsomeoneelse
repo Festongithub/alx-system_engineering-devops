@@ -1,15 +1,3 @@
 #!/usr/bin/env bash
-#!/bin/bash
-
 # check if argument is provided
-if [ $# -eq 0 ]; then
-  echo "Error: Please provide a username as an argument."
-  exit 1
-fi
-
-# get the username from the first argument
-username=$1
-
-# run the whoami command under the specified user
-su - $username -c 'whoami'
-
+sudo -u "$1" whoami
