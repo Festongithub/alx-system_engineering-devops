@@ -1,63 +1,59 @@
 #!/usr/bin/python3
-
-"""This module works with API"""
-
+"""script that fetches info about a given employee's ID using an api"""
+import json
 import requests
 import sys
 
 
-def get_employee_name(employee_id):
-    """Gets the employee name"""
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    response = requests.get(user_url)
-
-    if response.status_code == 200:
-        user_data = response.json()
-        return user_data['name']
-    else:
-        print(f"Failed to fetch user data: {response.status_code}")
-        return None
-
-
-def get_todo_list_progress(employee_id):
-    """Gets the list for the employee"""
-    todo_url = "https://jsonplaceholder.typicode.com/todos"
-    response = requests.get(todo_url)
-
-    if response.status_code == 200:
-        todos = response.json()
-
-        # Filter the tasks based on the given employee ID
-        employee_todos = [todo for todo in todos if todo['userId']
-                          == employee_id]
-
-        if employee_todos:
-            employee_name = get_employee_name(employee_id)
-            if not employee_name:
-                return
-
-            total_tasks = len(employee_todos)
-            completed_tasks = [todo for todo in employee_todos
-                               if todo['completed']]
-            num_completed_tasks = len(completed_tasks)
-
-            print(f"Employee {employee_name} is done with tasks\
-                  ({num_completed_tasks}/{total_tasks}): ")
-
-            for todo in completed_tasks:
-                print(f"\t {todo['title']}")
-        else:
-            print(f"No TODOs found for employee ID {employee_id}")
-    else:
-        print(f"Failed to fetch data: {response.status_code}")
-
+base_url = 'https://jsonplaceholder.typicode.com'
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
-    else:
-        try:
-            employee_id = int(sys.argv[1])
-            get_todo_list_progress(employee_id)
-        except ValueError:
-            print("Employee ID must be an integer")
+
+    user_id = sys.argv[1]
+
+    # get user info e.g https://jsonplaceholder.typicode.com/users/1/
+    user_url = '{}/users?id={}'.format(base_url, user_id)
+    # print("user url is: {}".format(user_url))
+
+    # get info from api
+    response = requests.get(user_url)
+    # pull data from api
+    data = response.text
+    # parse the data into JSON format
+    data = json.loads(data)
+    # extract user data, in this case, name of employee
+    name = data[0].get('name')
+    # print("id is: {}".format(user_id))
+    # print("name is: {}".format(name))
+
+    # get user info about todo tasks
+    # e.g https://jsonplaceholder.typicode.com/users/1/todos
+    tasks_url = '{}/todos?userId={}'.format(base_url, user_id)
+    # print("tasks url is: {}".format(tasks_url))
+
+    # get info from api
+    response = requests.get(tasks_url)
+    # pull data from api
+    tasks = response.text
+    # parse the data into JSON format
+    tasks = json.loads(tasks)
+
+    # initialize completed count as 0 and find total number of tasks
+    completed = 0
+    total_tasks = len(tasks)
+
+    # initialize empty list for completed tasks
+    completed_tasks = []
+    # loop through tasks counting number of completed tasks
+    for task in tasks:
+
+        if task.get('completed'):
+            # print("The tasks are: {}\n".format(task))
+            completed_tasks.append(task)
+            completed += 1
+
+    # print the output in the required format
+    print("Employee {} is done with tasks({}/{}):"
+          .format(name, completed, total_tasks))
+    for task in completed_tasks:
+        print("\t {}".format(task.get('title')))
