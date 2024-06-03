@@ -1,77 +1,53 @@
 #!/usr/bin/python3
-
-"""Change to CSV for data"""
-
+"""script that fetches info about a given employee using an api
+and exports it in csv format
+"""
+import json
 import requests
 import sys
-import csv
 
 
-def get_employee_name(employee_id):
-    """Gets name of the employee"""
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    response = requests.get(user_url)
-
-    if response.status_code == 200:
-        user_data = response.json()
-        return user_data['name']
-    else:
-        print(f"Failed to fetch user data: {response.status_code}")
-        return None
-
-
-def get_todo_list_progress(employee_id):
-    """Lists the employee"""
-    todo_url = "https://jsonplaceholder.typicode.com/todos"
-    response = requests.get(todo_url)
-
-    if response.status_code == 200:
-        todos = response.json()
-
-        # Filter the tasks based on the given employee ID
-        employee_todos = [todo for todo in todos if todo['userId']
-                          == employee_id]
-
-        if employee_todos:
-            employee_name = get_employee_name(employee_id)
-            if not employee_name:
-                return
-
-            total_tasks = len(employee_todos)
-            completed_tasks = [todo for todo in employee_todos
-                               if todo['completed']]
-            num_completed_tasks = len(completed_tasks)
-
-            print(f"Employee {employee_name} is done with tasks\
-                    ({num_completed_tasks}/{total_tasks}):")
-
-            for todo in completed_tasks:
-                print(f"\t {todo['title']}")
-
-            # Write data to CSV
-            csv_filename = f"{employee_id}.csv"
-            with open(csv_filename, mode='w', newline='') as file:
-                writer = csv.writer(file, quoting=csv.QUOTE_MINIMAL)
-                writer.writerow(["USER_ID", "USERNAME",
-                                 "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-                for todo in employee_todos:
-                    writer.writerow([employee_id, employee_name,
-                                     todo['completed'], todo['title']])
-
-            print(f"Data exported to {csv_filename}")
-        else:
-            print(f"No TODOs found for employee ID {employee_id}")
-    else:
-        print(f"Failed to fetch data: {response.status_code}")
-
+base_url = 'https://jsonplaceholder.typicode.com'
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
-    else:
-        try:
-            employee_id = int(sys.argv[1])
-            get_todo_list_progress(employee_id)
-        except ValueError:
-            print("Employee ID must be an integer")
+
+    user_id = sys.argv[1]
+
+    # get user info e.g https://jsonplaceholder.typicode.com/users/1/
+    user_url = '{}/users?id={}'.format(base_url, user_id)
+    # print("user url is: {}".format(user_url))
+
+    # get info from api
+    response = requests.get(user_url)
+    # pull data from api
+    data = response.text
+    # parse the data into JSON format
+    data = json.loads(data)
+    # extract user data, in this case, username of employee
+    user_name = data[0].get('username')
+    # print("id is: {}".format(user_id))
+    # print("name is: {}".format(user_name))
+
+    # get user info about todo tasks
+    # e.g https://jsonplaceholder.typicode.com/users/1/todos
+    tasks_url = '{}/todos?userId={}'.format(base_url, user_id)
+    # print("tasks url is: {}".format(tasks_url))
+
+    # get info from api
+    response = requests.get(tasks_url)
+    # pull data from api
+    tasks = response.text
+    # parse the data into JSON format
+    tasks = json.loads(tasks)
+
+    # build the csv
+    builder = ""
+    for task in tasks:
+        builder += '"{}","{}","{}","{}"\n'.format(
+            user_id,
+            user_name,
+            task['completed'],  # or use get method
+            task['title']
+        )
+    with open('{}.csv'.format(user_id), 'w', encoding='UTF8') as myFile:
+        myFile.write(builder)

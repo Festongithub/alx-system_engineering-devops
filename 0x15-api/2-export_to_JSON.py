@@ -1,81 +1,59 @@
 #!/usr/bin/python3
-
-"""convert to json"""
-
+"""script that fetches info about a given employee using an api
+and exports it in json format
+"""
+import json
 import requests
 import sys
-import json
 
 
-def get_employee_name(employee_id):
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    response = requests.get(user_url)
-
-    if response.status_code == 200:
-        user_data = response.json()
-        return user_data['name']
-    else:
-        print(f"Failed to fetch user data: {response.status_code}")
-        return None
-
-
-def get_todo_list_progress(employee_id):
-    todo_url = "https://jsonplaceholder.typicode.com/todos"
-    response = requests.get(todo_url)
-
-    if response.status_code == 200:
-        todos = response.json()
-
-        # Filter the tasks based on the given employee ID
-        employee_todos = [todo for todo in todos if todo['userId']
-                          == employee_id]
-
-        if employee_todos:
-            employee_name = get_employee_name(employee_id)
-            if not employee_name:
-                return
-
-            total_tasks = len(employee_todos)
-            completed_tasks = [todo for todo in employee_todos
-                               if todo['completed']]
-            num_completed_tasks = len(completed_tasks)
-
-            print(f"Employee {employee_name} is done with tasks\
-                    ({num_completed_tasks}/{total_tasks}):")
-
-            for todo in completed_tasks:
-                print(f"\t {todo['title']}")
-
-            # Prepare data for JSON
-            json_data = {
-                "USER_ID": employee_id,
-                "tasks": []
-            }
-            for todo in employee_todos:
-                json_data["tasks"].append({
-                    "task": todo['title'],
-                    "completed": todo['completed'],
-                    "username": employee_name
-                })
-
-            # Write data to JSON file
-            json_filename = f"{employee_id}.json"
-            with open(json_filename, 'w') as json_file:
-                json.dump(json_data, json_file, indent=4)
-
-            print(f"Data exported to {json_filename}")
-        else:
-            print(f"No TODOs found for employee ID {employee_id}")
-    else:
-        print(f"Failed to fetch data: {response.status_code}")
-
+base_url = 'https://jsonplaceholder.typicode.com'
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <employee_id>")
-    else:
-        try:
-            employee_id = int(sys.argv[1])
-            get_todo_list_progress(employee_id)
-        except ValueError:
-            print("Employee ID must be an integer")
+
+    user_id = sys.argv[1]
+
+    # get user info e.g https://jsonplaceholder.typicode.com/users/1/
+    user_url = '{}/users?id={}'.format(base_url, user_id)
+    # print("user url is: {}".format(user_url))
+
+    # get info from api
+    response = requests.get(user_url)
+    # pull data from api
+    data = response.text
+    # parse the data into JSON format
+    data = json.loads(data)
+    # extract user data, in this case, username of employee
+    user_name = data[0].get('username')
+    # print("id is: {}".format(user_id))
+    # print("username is: {}".format(user_name))
+
+    # get user info about todo tasks
+    # e.g https://jsonplaceholder.typicode.com/users/1/todos
+    tasks_url = '{}/todos?userId={}'.format(base_url, user_id)
+    # print("tasks url is: {}".format(tasks_url))
+
+    # get info from api
+    response = requests.get(tasks_url)
+    # pull data from api
+    tasks = response.text
+    # parse the data into JSON format
+    tasks = json.loads(tasks)
+    # print("JSOON LOADS IS: {}".format(tasks))
+
+    dict_key = str(user_id)
+    # print("dict_key: {}".format(dict_key))
+
+    # build the json
+    builder = {dict_key: []}
+    for task in tasks:
+        json_data = {
+            "task": task['title'],  # or use get method
+            "completed": task['completed'],
+            "username": user_name
+        }
+        # append dictionary key to the dictionary
+        builder[dict_key].append(json_data)
+    json_encoded_data = json.dumps(builder)
+    with open('{}.json'.format(user_id), 'w', encoding='UTF8') as myFile:
+        myFile.write(json_encoded_data)
