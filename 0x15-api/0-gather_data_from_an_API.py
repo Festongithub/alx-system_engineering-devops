@@ -4,10 +4,9 @@
 Script that for a given employee ID,
 returns information about his/her TODO list progress.
 """
-
+import json
 import requests
 import sys
-import json
 
 
 url = 'https://jsonplaceholder.typicode.com'
