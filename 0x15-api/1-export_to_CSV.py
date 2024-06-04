@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # load the data
     data = json.loads(data)
     # extract name
-    name = data[0].get('name')
+    name = data[0].get('username')
 
     # Task for the employees
     task_url = '{}/todos?userId={}'.format(url, userId)
