@@ -1,35 +1,49 @@
 #!/usr/bin/python3
-"""
-Returns to-do list information for a given employee ID.
 
-This script takes an employee ID as a command-line argument and fetches
-the corresponding user information and to-do list from the JSONPlaceholder API.
-It then prints the tasks completed by the employee.
+"""
+Script that for a given employee ID,
+returns information about his/her TODO list progress.
 """
 
 import requests
 import sys
+import json
 
+
+url = 'https://jsonplaceholder.typicode.com'
 
 if __name__ == "__main__":
-    # Base URL for the JSONPlaceholder API
-    url = "https://jsonplaceholder.typicode.com/"
+    userId = sys.argv[1]
 
-    # Get the employee information using the provided employee ID
-    employee_id = sys.argv[1]
-    user = requests.get(url + "users/{}".format(employee_id)).json()
+    users_uri = '{}/users?id={}'.format(url, userId)
 
-    # Get the to-do list for the employee using the provided employee ID
-    params = {"userId": employee_id}
-    todos = requests.get(url + "todos", params).json()
+    response = requests.get(users_uri)
+    data = response.text
+    # load the data
+    data = json.loads(data)
+    # extract name
+    name = data[0].get('name')
 
-    # Filter completed tasks and count them
-    completed = [t.get("title") for t in todos if t.get("completed") is True]
+    # Task for the employees
+    task_url = '{}/todos?userId={}'.format(url, userId)
 
-    # Print the employee's name and the number of completed tasks
-    print("Employee {} is done with tasks({}/{}):".format(
-        user.get("name"), len(completed), len(todos)))
+    response = requests.get(task_url)
+    tasks = response.text
+    tasks = json.loads(tasks)
 
-    # Print the completed tasks one by one with indentation
-    [print("\t {}".format(complete)) for complete in completed]
+    # initialize list
+    completed = 0
+    total_tasks = len(tasks)
 
+    comp_task = []
+
+    for task in tasks:
+        if task.get('completed'):
+            comp_task.append(task)
+            completed += 1
+
+    print("Employee {} is done with tasks({}/{}):"
+          .format(name, completed, total_tasks))
+
+    for task in comp_task:
+        print("\t {}".format(task.get('title')))
